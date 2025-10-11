@@ -1,20 +1,37 @@
 version: '3.8'
+
 services:
+  my-mysqldb:
+    image: mysql:8.0
+    container_name: my-mysqldb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: my-mysqldb
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-mysql-data:/var/lib/mysql
+    networks:
+      - vacation-network
+
   app:
-    build: . 
+    build: .
+    container_name: vacation-app
+    restart: unless-stopped
+    depends_on:
+      - my-mysqldb
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/vacationdb
+      SPRING_DATASOURCE_URL: jdbc:mysql://my-mysqldb:3306/my-mysqldb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: secret
-    depends_on:
-      - db
+      SPRING_DATASOURCE_PASSWORD: your_root_password
+    networks:
+      - vacation-network
 
-  db:
-    image: mysql:8
-    environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: vacationdb
-    ports:
-      - "3306:3306"
+volumes:
+  my-mysql-data:
+
+networks:
+  vacation-network:

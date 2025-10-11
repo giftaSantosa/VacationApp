@@ -1,6 +1,18 @@
-FROM eclipse-temurin:21-jdk
-WORKDIR /VacationApp
+#Building base image
+FROM eclipse-temurin:21-jdk AS base
+WORKDIR /app
 
-COPY target/VacationApp-0.0.1-SNAPSHOT.jar /vacationApp.jar
+#Install dependencies
+COPY pom.xml .
+COPY .mvn .mvn
+COPY mvnw .
+COPY mvnw.cmd .
+RUN chmod +x mvnw
 
-ENTRYPOINT [ "java", "-jar", "/vacationApp.jar" ]
+RUN ./mvnw dependency:go-offline
+
+#Copy in the source code
+COPY src ./src
+EXPOSE 8080
+
+CMD [ "./mvnw", "spring-boot:run"]
