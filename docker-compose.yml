@@ -1,0 +1,32 @@
+services:
+  my-mysqldb:
+    image: mysql:8.0
+    container_name: my-mysqldb
+    restart: unless-stopped
+    env_file:
+      - db_secrets.env
+    ports:
+      - "3306:3306"
+    volumes:
+      - my-mysql-data:/var/lib/mysql
+    networks:
+      - vacation-network
+
+  app:
+    build: .
+    container_name: vacation-app
+    restart: unless-stopped
+    depends_on:
+      - my-mysqldb
+    ports:
+      - "8080:8080"
+    env_file:
+      - db_secrets.env
+    networks:
+      - vacation-network
+
+volumes:
+  my-mysql-data:
+
+networks:
+  vacation-network:
