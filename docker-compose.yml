@@ -5,9 +5,8 @@ services:
     image: mysql:8.0
     container_name: my-mysqldb
     restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: your_root_password
-      MYSQL_DATABASE: my-mysqldb
+    env_file:
+      - db_secrets.env
     ports:
       - "3306:3306"
     volumes:
@@ -23,10 +22,8 @@ services:
       - my-mysqldb
     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://my-mysqldb:3306/my-mysqldb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: your_root_password
+    env_file:
+      - db_secrets.env
     networks:
       - vacation-network
 
